@@ -1,6 +1,7 @@
 .vscode/
 .vs/
 node_modules/
+[Oo]ut/
 
 package-lock.json
 *.js
