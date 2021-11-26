@@ -1,3 +1,3 @@
 # lauchpioos
 
-Under construction
+A JavaScript geometry sketching library.
