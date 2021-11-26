@@ -1,6 +1,17 @@
-function sum(a: number, b: number) 
+class Geometry extends HTMLElement
 {
-    return a + b;
+    constructor()
+    {
+        super();
+
+        this.attachShadow({mode: "open"});
+
+        console.log("Created Geomtry tag");
+        const text = document.createElement("p")
+        text.innerText = "Geometry tag";
+
+        this.shadowRoot.append(text);
+    }
 }
 
-console.log(sum(420, 69));
+customElements.define("custom-geometry", Geometry);
