@@ -17,7 +17,7 @@ circle(A, len(AB))
 
 ## Grammar
 ```
-instruction ::= identifier({parameter, })
+instruction ::= identifier({parameter, }) [-> identifer]
 parameter ::= instruction | identifier | number
 identifier ::= (A-Za-z)
 number ::= (0-9)[.(0-9)]
