@@ -1,14 +1,16 @@
-
-export class ShapeStyle
+module Util
 {
-    public strokeWidth: number;
-    public strokeColor: string;
-    public fillColor: string;
-
-    constructor()
+    export class ShapeStyle
     {
-        this.strokeWidth = 1;
-        this.strokeColor = '#000000';
-        this.fillColor = '#00000000';
+        public strokeWidth: number;
+        public strokeColor: string;
+        public fillColor: string;
+
+        constructor()
+        {
+            this.strokeWidth = 1;
+            this.strokeColor = '#000000';
+            this.fillColor = '#00000000';
+        }
     }
 }
