@@ -1,8 +1,9 @@
 {
     "compilerOptions": {
         "target": "es6",
-        "module": "commonjs",
-        "outDir": "out",
+        "outFile": "./out/lauchpioos.js",
+        "sourceRoot": "./src",
+        "rootDir": "./src",
         "sourceMap": true
     }
 }
