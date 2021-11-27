@@ -33,3 +33,20 @@ class NumberParameter extends Parameter
         return this.val;
     }
 }
+
+class InstructionParameter extends Parameter
+{
+    public instr: Instruction;
+
+    constructor(instr: Instruction)
+    {
+        super(ParameterType.Identifier);
+
+        this.instr = instr;
+    }
+
+    eval()
+    {
+        return this.instr.eval();
+    }
+}

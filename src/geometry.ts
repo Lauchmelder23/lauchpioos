@@ -34,6 +34,10 @@ class Geometry extends HTMLElement
         let content = loadScript(sourceFile);
 
         let parser = new Parser(content);
+        for(let instr of parser.instructions)
+        {
+            console.log(instr.eval());
+        }
 
         this.attachShadow({mode: "open"});
         let canvas = document.createElement("canvas");

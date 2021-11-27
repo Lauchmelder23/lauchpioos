@@ -3,38 +3,53 @@
 
 class Parser
 {
-    private instructions: Instruction[];
+    public instructions: Instruction[];
+    private variables: { [id: string] : InstructionParameter};
 
     constructor(source: string)
     {
         this.instructions = [];
+        this.variables = {};
+
         let lines = source.split(/\r?\n/);
         for(let line of lines)
-            this.parseInstruction(line);
+        {
+            let instr = this.parseInstruction(line);
+            if(!instr[0])
+                this.instructions.push(instr[1]);
+        }
     }
 
-    private parseInstruction(instruction: string): boolean
+    private parseInstruction(instruction: string): [boolean, Instruction]
     {
         // If the instruction is an empty line, do nothing for now
         if(instruction === "")
-            return false;
+            return null;
         
+        let hidden = false;
+        if(instruction[0] === "[" && instruction[instruction.length - 1] === "]")
+        {
+            hidden = true;
+            instruction = instruction.substring(1, instruction.length - 1);
+        }
+
+        instruction = instruction.split(" ").join("");  // Remove spaces
+
         // match the pattern "text(text)"
         let matches = instruction.match(/[A-Za-z]*\(.*\)/);
         if(matches === null)    // no match found
         {
             console.error("Invalid syntax");
-            return false;
+            return null;
         }
 
         if(matches.length > 1)  // more than one match
         {
             console.error("Script may only contain one instruction per line");
-            return false;
+            return null;
         }
 
         let instr = matches[0]; // get the instruction
-        instr = instr.split(" ").join("");
         let paranthesisPos = instr.search(/\(/);    // Find the position of the first opening paranthesis
 
 
@@ -50,25 +65,86 @@ class Parser
         }
         params.push(paramlist);
 
-        this.instructions.push(new Instruction(InstructionType.Point));
-        for(let param of params)
+        let newInstruction;
+        switch(symbol)
         {
-            if(!this.parseParameter(param))
+            case "point":
             {
-                console.error("Error during parameter parsing");
-                return false;
+                newInstruction = new PointInstruction();
+                break;
+            }
+
+            case "line":
+            {
+                newInstruction = new LineInstruction();
+                break;
+            }
+
+            default:
+            {
+                console.error("Unknown instruction \"" + symbol + "\"");
+                return null;
             }
         }
 
-        return true;
+        for(let param of params)
+        {
+            if(!this.parseParameter(newInstruction, param))
+            {
+                console.error("Error during parameter parsing: \"" + param + "\" failed to be parsed.");
+                return null;
+            }
+        }
+
+        let assignment = instruction.search(/->/);
+        if(assignment !== -1)
+        {
+            let variableName = instruction.substring(assignment + 2, instruction.length);
+
+            if(variableName in this.variables)
+            {
+                console.error("Redefinition of variable \"" + variableName + "\" is not allowed.");
+                return null;
+            }
+
+            this.variables[variableName] = new InstructionParameter(newInstruction);
+        }
+
+        return [hidden, newInstruction];
     }
 
-    private parseParameter(parameter: string): boolean
+    private parseParameter(instr: Instruction, parameter: string): boolean
     {
-        let match = parameter.search(/\d*\.?\d*$/);
-        if(match === 0)
+        let match = parameter.match(/\d*\.?\d*$/);
+        if(match !== null && match[0] === parameter && match.index === 0)
         {
-            this.instructions[this.instructions.length - 1].params.push(new NumberParameter(4));
+            let val = parseFloat(parameter);
+            let paramObj = new NumberParameter(val);
+
+            instr.params.push(paramObj);
+            return true;
+        }
+
+        match = parameter.match(/[A-Za-z]/)
+        if(match !== null && match[0] === parameter && match.index === 0)
+        {
+            let paramObj = this.variables[parameter];
+            if(paramObj === undefined)
+            {
+                console.error("Variable \"" + parameter + "\" is not defined");
+                return false;
+            }
+
+            instr.params.push(paramObj);
+            return true;
+        }
+
+        match = parameter.match(/[A-Za-z]*\(.*\)/)
+        if(match !== null && match[0] === parameter && match.index === 0)
+        {
+            let paramObj = new InstructionParameter(this.parseInstruction(parameter)[1]);
+
+            instr.params.push(paramObj);
             return true;
         }
 
