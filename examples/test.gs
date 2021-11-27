@@ -1,3 +1,2 @@
-point(3 | 4)
-
-point(6 | 7)
+point(3, 4) -> A
+line(A, point(7, 8))

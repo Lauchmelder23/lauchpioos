@@ -1,5 +1,6 @@
 /// <reference path="vector.ts" />
 /// <reference path="shapes.ts" />
+/// <reference path="parser/parser.ts" />
 
 function loadScript(filepath: string): string
 {
@@ -32,33 +33,7 @@ class Geometry extends HTMLElement
         let sourceFile = this.getAttribute("src");
         let content = loadScript(sourceFile);
 
-        let lines = content.split("\n");
-        for(let line of lines)
-        {
-            if(line === "\r")
-            {
-                console.log("empty");
-                continue;
-            }
-
-            let instruction = line.split("(")[0];
-
-            switch(instruction)
-            {
-                case instruction:
-                {
-                    let coords = line.split("(")[1].split("|");
-                    console.log(coords);
-                    break;
-                }
-
-                default:
-                {
-                    console.log("something else");
-                    break;
-                }
-            }
-        }
+        let parser = new Parser(content);
 
         this.attachShadow({mode: "open"});
         let canvas = document.createElement("canvas");
