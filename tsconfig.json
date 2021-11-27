@@ -2,7 +2,6 @@
     "compilerOptions": {
         "target": "es6",
         "outFile": "./out/geometry.js",
-        "outDir": "./out",
         "sourceRoot": "./src",
         "rootDir": "./src",
         "sourceMap": true

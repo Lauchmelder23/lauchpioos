@@ -1,3 +1,6 @@
+/// <reference path="vector.ts" />
+/// <reference path="shapes.ts" />
+
 function loadScript(filepath: string): string
 {
     let result = null;
@@ -73,8 +76,8 @@ class Geometry extends HTMLElement
 
     private redraw()
     {
-        Shape.line(this.context, new Util.Vector2D(), new Util.Vector2D(300, 300));
-        Shape.circle(this.context, new Util.Vector2D(150, 150), 100);
+        line(this.context, new Vector2D(), new Vector2D(300, 300));
+        circle(this.context, new Vector2D(150, 150), 100);
     }
 }
 

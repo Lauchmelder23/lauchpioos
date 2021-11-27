@@ -1,14 +1,11 @@
-module Util 
+class Vector2D
 {
-    export class Vector2D
+    public x: number;
+    public y: number;
+    
+    constructor(x: number = 0, y: number = 0)
     {
-        public x: number;
-        public y: number;
-        
-        constructor(x: number = 0, y: number = 0)
-        {
-            this.x = x;
-            this.y = y;
-        }
+        this.x = x;
+        this.y = y;
     }
 }
