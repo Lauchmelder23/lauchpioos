@@ -1,7 +1,7 @@
 function loadScript(filepath: string): string
 {
-    var result = null;
-    var xmlhttp = new XMLHttpRequest();
+    let result = null;
+    let xmlhttp = new XMLHttpRequest();
     xmlhttp.open("GET", filepath, false);
     xmlhttp.send();
     if (xmlhttp.status==200) {
