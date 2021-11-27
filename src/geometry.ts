@@ -20,7 +20,7 @@ class Geometry extends HTMLElement
     constructor()
     {
         super();
-
+        console.log("constructor")
         if(!this.hasAttribute("src"))
         {
             return;
