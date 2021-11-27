@@ -16,11 +16,6 @@ These variables are immutable. Objects do not exist in this script, in fact, var
 
 Lines in brackets `[]` are "hidden". They are parsed, but will not be rendered.
 
-## Primitives
-* `Point point(x, y)` is a 2D point. It returns an element of type `Point`
-* `Line line(Point from, Point to)` is a straight line. It returns an element of type `Line`.
-* `Circle circle(Point center, radius)` draws a circle at `center` and `radius`
-
 ## Grammar
 ```
 instruction ::= identifier({parameter, }) [-> identifer]
