@@ -1,4 +1,4 @@
-export class Vector2D
+class Vector2D
 {
     public x: number;
     public y: number;

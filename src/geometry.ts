@@ -1,5 +1,5 @@
-import { Vector2D } from "./vector.js"
-import * as shape from "./shapes.js"
+/// <reference path="vector.ts" />
+/// <reference path="shapes.ts" />
 
 function loadScript(filepath: string): string
 {
@@ -76,8 +76,8 @@ class Geometry extends HTMLElement
 
     private redraw()
     {
-        shape.line(this.context, new Vector2D(), new Vector2D(300, 300));
-        shape.circle(this.context, new Vector2D(150, 150), 100);
+        line(this.context, new Vector2D(), new Vector2D(300, 300));
+        circle(this.context, new Vector2D(150, 150), 100);
     }
 }
 
