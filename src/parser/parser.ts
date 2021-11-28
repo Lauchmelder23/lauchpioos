@@ -1,5 +1,5 @@
 /// <reference path="parameter.ts" />
-/// <reference path="instruction.ts" />
+/// <reference path="instructionFactory.ts" />
 
 class Parser
 {
@@ -66,38 +66,11 @@ class Parser
         }
         params.push(paramlist);
 
-        let newInstruction;
-        switch(symbol)
+        let newInstruction = InstructionFactory.createInstruction(symbol);
+        if(newInstruction === null)
         {
-            case "point":
-            {
-                newInstruction = new PointInstruction();
-                break;
-            }
-
-            case "line":
-            {
-                newInstruction = new LineInstruction();
-                break;
-            }
-
-            case "circle":
-            {
-                newInstruction = new CircleInstruction();
-                break;
-            }
-
-            case "len":
-            {
-                newInstruction = new LengthInstruction();
-                break;
-            }
-
-            default:
-            {
-                console.error("Unknown instruction \"" + symbol + "\"");
-                return null;
-            }
+            console.error("Unknown instruction: \"" + symbol + "\"");
+            return null;
         }
 
         let expectedArgs = newInstruction.getParameterCount();
