@@ -1,16 +1,24 @@
 /// <reference path="parameter.ts" />
 /// <reference path="instructionFactory.ts" />
 
+/**
+ * @brief Turns a .gs script into a list of instructions to be passed to the renderer
+ */
 class Parser
 {
-    public instructions: Instruction[];
-    private variables: { [id: string] : InstructionParameter};
+    public instructions: Instruction[];     
+    private macros: { [id: string] : InstructionParameter};
     private success: boolean;
 
+    /**
+     * Parses each line of the script and turns them into instructions or adds them to the macro list
+     * 
+     * @param source The source code of the script
+     */
     constructor(source: string)
     {
         this.instructions = [];
-        this.variables = {};
+        this.macros = {};
         this.success = false;
 
         let lines = source.split(/\r?\n/);
@@ -30,6 +38,7 @@ class Parser
                 return;
             }
 
+            // If the instruction is null it means that the instruction was a function and not a primitive
             if(instr !== null)
                 if(!instr[0])
                     this.instructions.push(instr[1]);  
@@ -48,6 +57,7 @@ class Parser
         if(instruction === "")
             return null;
         
+        // Handle [] syntax. Lines in [] will be processed but not rendered
         let hidden = false;
         if(instruction[0] === "[" && instruction[instruction.length - 1] === "]")
         {
@@ -72,6 +82,7 @@ class Parser
         let symbol = instr.substr(0, paranthesisPos);   // get function name
         let paramlist = instr.substring(paranthesisPos + 1, instr.length - 1); // get parameter list
         
+        // Construct the parameter list
         let match;
         let params = [];
         while((match = paramlist.search(/,(?![^\(]*\))/)) !== -1)
@@ -81,28 +92,32 @@ class Parser
         }
         params.push(paramlist);
 
+        // Create appropriate instruction
         let newInstruction = InstructionFactory.createInstruction(symbol);
         if(newInstruction === null)
             throw new Error("Unknown instruction: \"" + symbol + "\"");
 
+        // Check that the number of arguments passed to the function is correct
         let expectedArgs = newInstruction.getParameterCount();
         if(expectedArgs !== params.length)
             throw new Error("Wrong number of arguments for instruction \"" + symbol + "\". Expected " + expectedArgs + " arguments but received " + params.length + " instead.");
 
+        // Parse the individual parameters
         for(let param of params)
         {
             if(!this.parseParameter(newInstruction, param))
                 throw new Error("Error during parameter parsing: \"" + param + "\" failed to be parsed.");
         }
 
+        // In case there is an assignment, add the instruction to the macro list
         let assignment = instruction.search(/->/);
         if(assignment !== -1)
         {
             let variableName = instruction.substring(assignment + 2, instruction.length);
-            if(variableName in this.variables)
+            if(variableName in this.macros)
                 throw new Error("Redefinition of variable \"" + variableName + "\" is not allowed.");
 
-            this.variables[variableName] = new InstructionParameter(newInstruction);
+            this.macros[variableName] = new InstructionParameter(newInstruction);
         }
 
         return [hidden, newInstruction];
@@ -110,6 +125,7 @@ class Parser
 
     private parseParameter(instr: Instruction, parameter: string): boolean
     {
+        // Parameter is a number
         let match = parameter.match(/-?\d*\.?\d*$/);
         if(match !== null && match[0] === parameter && match.index === 0)
         {
@@ -120,10 +136,11 @@ class Parser
             return true;
         }
 
+        // Parameter is an identifier (macro)
         match = parameter.match(/[A-Za-z]*/)
         if(match !== null && match[0] === parameter && match.index === 0)
         {
-            let paramObj = this.variables[parameter];
+            let paramObj = this.macros[parameter];
             if(paramObj === undefined)
             {
                 console.error("Variable \"" + parameter + "\" is not defined");
@@ -134,6 +151,7 @@ class Parser
             return true;
         }
 
+        // Parameter is another instruction
         match = parameter.match(/[A-Za-z]*\(.*\)/)
         if(match !== null && match[0] === parameter && match.index === 0)
         {

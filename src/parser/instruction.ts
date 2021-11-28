@@ -10,19 +10,20 @@ enum InstructionType
 
 abstract class Instruction 
 {
-    public fn: InstructionType;
+    private type: InstructionType;
     public params :Parameter[];
     private argc: number;
 
     constructor(type: InstructionType, argc: number)
     {
-        this.fn = type;
+        this.type = type;
         this.argc = argc;
         this.params = [];
     }
 
     abstract eval();
     public getParameterCount(): number { return this.argc; }
+    public getType(): InstructionType { return this.type; }
 }
 
 class PointInstruction extends Instruction
