@@ -15,8 +15,9 @@ class Parser
         for(let line of lines)
         {
             let instr = this.parseInstruction(line);
-            if(!instr[0])
-                this.instructions.push(instr[1]);
+            if(instr !== null)
+                if(!instr[0])
+                    this.instructions.push(instr[1]);  
         }
     }
 
@@ -80,11 +81,30 @@ class Parser
                 break;
             }
 
+            case "circle":
+            {
+                newInstruction = new CircleInstruction();
+                break;
+            }
+
+            case "len":
+            {
+                newInstruction = new LengthInstruction();
+                break;
+            }
+
             default:
             {
                 console.error("Unknown instruction \"" + symbol + "\"");
                 return null;
             }
+        }
+
+        let expectedArgs = newInstruction.getParameterCount();
+        if(expectedArgs !== params.length)
+        {
+            console.error("Wrong number of arguments for instruction \"" + symbol + "\". Expected " + expectedArgs + " arguments but received " + params.length + " instead.");
+            return null;
         }
 
         for(let param of params)
@@ -100,7 +120,6 @@ class Parser
         if(assignment !== -1)
         {
             let variableName = instruction.substring(assignment + 2, instruction.length);
-
             if(variableName in this.variables)
             {
                 console.error("Redefinition of variable \"" + variableName + "\" is not allowed.");
@@ -115,7 +134,7 @@ class Parser
 
     private parseParameter(instr: Instruction, parameter: string): boolean
     {
-        let match = parameter.match(/\d*\.?\d*$/);
+        let match = parameter.match(/-?\d*\.?\d*$/);
         if(match !== null && match[0] === parameter && match.index === 0)
         {
             let val = parseFloat(parameter);
@@ -125,7 +144,7 @@ class Parser
             return true;
         }
 
-        match = parameter.match(/[A-Za-z]/)
+        match = parameter.match(/[A-Za-z]*/)
         if(match !== null && match[0] === parameter && match.index === 0)
         {
             let paramObj = this.variables[parameter];

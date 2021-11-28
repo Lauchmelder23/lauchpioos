@@ -1,0 +1,9 @@
+point(-1, 0) -> A
+point(1, 0) -> B
+line(A, B) -> AB
+len(AB) -> length
+circle(A, len(AB)) -> circleA
+circle(B, len(AB)) -> circleB
+intersection(circleA, circleB, 0) -> C
+line(A, C)
+line(B, C)
