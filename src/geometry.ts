@@ -34,6 +34,12 @@ class Geometry extends HTMLElement
         let content = loadScript(sourceFile);
 
         let parser = new Parser(content);
+        if(!parser.good())
+        {
+            console.error("Failed to create parser for script " + sourceFile);
+            return;
+        }
+
         for(let instr of parser.instructions)
         {
             console.log(instr.eval());

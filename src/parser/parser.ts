@@ -5,21 +5,42 @@ class Parser
 {
     public instructions: Instruction[];
     private variables: { [id: string] : InstructionParameter};
+    private success: boolean;
 
     constructor(source: string)
     {
         this.instructions = [];
         this.variables = {};
+        this.success = false;
 
         let lines = source.split(/\r?\n/);
+        let currentLine = 1;
         for(let line of lines)
         {
-            let instr = this.parseInstruction(line);
+            let instr;
+            try 
+            {
+                 instr = this.parseInstruction(line);
+            }
+            catch(e)
+            {
+                console.error("Error in line " + currentLine);
+                console.error(e);
+
+                return;
+            }
+
             if(instr !== null)
                 if(!instr[0])
                     this.instructions.push(instr[1]);  
+
+            currentLine++;
         }
+
+        this.success = true;
     }
+
+    public good() { return this.success; }
 
     private parseInstruction(instruction: string): [boolean, Instruction]
     {
@@ -39,16 +60,10 @@ class Parser
         // match the pattern "text(text)"
         let matches = instruction.match(/[A-Za-z]*\(.*\)/);
         if(matches === null)    // no match found
-        {
-            console.error("Invalid syntax");
-            return null;
-        }
+            throw new Error("Line does not contain a valid instruction.");
 
         if(matches.length > 1)  // more than one match
-        {
-            console.error("Script may only contain one instruction per line");
-            return null;
-        }
+            throw new Error("Line may only contain one instruction");
 
         let instr = matches[0]; // get the instruction
         let paranthesisPos = instr.search(/\(/);    // Find the position of the first opening paranthesis
@@ -68,25 +83,16 @@ class Parser
 
         let newInstruction = InstructionFactory.createInstruction(symbol);
         if(newInstruction === null)
-        {
-            console.error("Unknown instruction: \"" + symbol + "\"");
-            return null;
-        }
+            throw new Error("Unknown instruction: \"" + symbol + "\"");
 
         let expectedArgs = newInstruction.getParameterCount();
         if(expectedArgs !== params.length)
-        {
-            console.error("Wrong number of arguments for instruction \"" + symbol + "\". Expected " + expectedArgs + " arguments but received " + params.length + " instead.");
-            return null;
-        }
+            throw new Error("Wrong number of arguments for instruction \"" + symbol + "\". Expected " + expectedArgs + " arguments but received " + params.length + " instead.");
 
         for(let param of params)
         {
             if(!this.parseParameter(newInstruction, param))
-            {
-                console.error("Error during parameter parsing: \"" + param + "\" failed to be parsed.");
-                return null;
-            }
+                throw new Error("Error during parameter parsing: \"" + param + "\" failed to be parsed.");
         }
 
         let assignment = instruction.search(/->/);
@@ -94,10 +100,7 @@ class Parser
         {
             let variableName = instruction.substring(assignment + 2, instruction.length);
             if(variableName in this.variables)
-            {
-                console.error("Redefinition of variable \"" + variableName + "\" is not allowed.");
-                return null;
-            }
+                throw new Error("Redefinition of variable \"" + variableName + "\" is not allowed.");
 
             this.variables[variableName] = new InstructionParameter(newInstruction);
         }
