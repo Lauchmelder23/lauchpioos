@@ -1,26 +1,64 @@
 import { Vector2D } from "./vector.js"
 import { ShapeStyle } from "./shapeStyle.js";
 
-export function line(ctx: CanvasRenderingContext2D, from: Vector2D , to: Vector2D, style: ShapeStyle = new ShapeStyle())
+abstract class Shape
 {
-    ctx.beginPath();
-    ctx.moveTo(from.x, from.y);
-    ctx.lineTo(to.x, to.y);
+    protected ctx: CanvasRenderingContext2D
+    protected style: ShapeStyle
 
-    ctx.lineWidth = style.strokeWidth;
-    ctx.strokeStyle = style.strokeColor;
-    ctx.stroke();
+    constructor(ctx) {
+        this.ctx = ctx
+        this.style = new ShapeStyle()
+    }
+
+    abstract draw()
 }
 
-export function circle(ctx: CanvasRenderingContext2D, center: Vector2D, radius: number, style: ShapeStyle = new ShapeStyle())
+class Line extends Shape
 {
-    ctx.beginPath();
-    ctx.arc(center.x, center.y, radius, 0, 2 * Math.PI, false);
+   private from: Vector2D
+   private to: Vector2D
 
-    ctx.fillStyle = style.fillColor;
-    ctx.fill();
-    
-    ctx.lineWidth = style.strokeWidth;
-    ctx.strokeStyle = style.strokeColor;
-    ctx.stroke();
+   constructor(ctx,from, to) {
+       super(ctx)
+       this.from = from
+       this.to = to
+   }
+
+   public draw()
+   {
+       this.ctx.beginPath();
+       this.ctx.moveTo(this.from.x, this.from.y);
+       this.ctx.lineTo(this.to.x, this.to.y);
+
+       this.ctx.lineWidth = this.style.strokeWidth;
+       this.ctx.strokeStyle = this.style.strokeColor;
+       this.ctx.stroke();
+   }
+}
+
+class Circle extends Shape
+{
+
+    private center: Vector2D
+    private radius: number
+
+    constructor(ctx,center, radius) {
+        super(ctx)
+        this.center = center
+        this.radius = radius
+    }
+
+    public draw()
+    {
+        this.ctx.beginPath();
+        this.ctx.arc(this.center.x, this.center.y, this.radius, 0, 2 * Math.PI, false);
+
+        this.ctx.fillStyle = this.style.fillColor;
+        this.ctx.fill();
+
+        this.ctx.lineWidth = this.style.strokeWidth;
+        this.ctx.strokeStyle = this.style.strokeColor;
+        this.ctx.stroke();
+    }
 }
