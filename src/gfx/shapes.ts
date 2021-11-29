@@ -1,5 +1,5 @@
-/// <reference path="vector.ts" />
-/// <reference path="shapeStyle.ts" />
+/// <reference path="../vector.ts" />
+/// <reference path="../shapeStyle.ts" />
 
 abstract class Shape
 {

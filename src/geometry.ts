@@ -1,5 +1,5 @@
 /// <reference path="vector.ts" />
-/// <reference path="shapes.ts" />
+/// <reference path="gfx/polygon.ts" />
 /// <reference path="parser/parser.ts" />
 
 function loadScript(filepath: string): string
@@ -17,6 +17,7 @@ function loadScript(filepath: string): string
 
 class Geometry extends HTMLElement
 {
+    private shapes: Shape[];
     private canvas: HTMLCanvasElement;
     private context: CanvasRenderingContext2D;
     private sourceFile: string;
@@ -50,13 +51,29 @@ class Geometry extends HTMLElement
 
         this.shadowRoot.append(this.canvas);
 
+
+        this.shapes = []
+        this.shapes.push(new Circle(this.context, new Vector2D(150, 150), 100))
+        this.shapes.push(new Line(this.context, new Vector2D(), new Vector2D(300, 300)))
+
+        this.shapes.push(new Polygon(this.context,
+            [
+                new Vector2D(150, 150),
+                new Vector2D(150, 250),
+                new Vector2D(250, 250),
+                new Vector2D(250, 150),
+                new Vector2D(300, 300),
+                new Vector2D(250, 350),
+            ]))
         this.redraw();
     }
 
     private redraw()
     {
-        line(this.context, new Vector2D(), new Vector2D(300, 300));
-        circle(this.context, new Vector2D(150, 150), 100);
+        for (let shape of this.shapes)
+        {
+            shape.draw()
+        }
     }
 }
 
