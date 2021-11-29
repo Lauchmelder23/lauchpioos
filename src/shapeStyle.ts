@@ -1,5 +1,4 @@
-
-export class ShapeStyle
+class ShapeStyle
 {
     public strokeWidth: number;
     public strokeColor: string;

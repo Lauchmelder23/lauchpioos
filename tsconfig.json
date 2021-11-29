@@ -1,8 +1,7 @@
 {
     "compilerOptions": {
         "target": "es6",
-        // "outFile": "./out/lauchpioos.js",
-        "outDir": "./out",
+        "outFile": "./out/geometry.js",
         "sourceRoot": "./src",
         "rootDir": "./src",
         "sourceMap": true

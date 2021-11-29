@@ -1,10 +1,11 @@
-import { Vector2D } from "./vector.js"
-import * as shape from "./shapes.js"
+/// <reference path="vector.ts" />
+/// <reference path="shapes.ts" />
+/// <reference path="parser/parser.ts" />
 
 function loadScript(filepath: string): string
 {
-    var result = null;
-    var xmlhttp = new XMLHttpRequest();
+    let result = null;
+    let xmlhttp = new XMLHttpRequest();
     xmlhttp.open("GET", filepath, false);
     xmlhttp.send();
     if (xmlhttp.status==200) {
@@ -23,7 +24,7 @@ class Geometry extends HTMLElement
     constructor()
     {
         super();
-
+        console.log("constructor")
         if(!this.hasAttribute("src"))
         {
             return;
@@ -32,32 +33,10 @@ class Geometry extends HTMLElement
         let sourceFile = this.getAttribute("src");
         let content = loadScript(sourceFile);
 
-        let lines = content.split("\n");
-        for(let line of lines)
+        let parser = new Parser(content);
+        for(let instr of parser.instructions)
         {
-            if(line === "\r")
-            {
-                console.log("empty");
-                continue;
-            }
-
-            let instruction = line.split("(")[0];
-
-            switch(instruction)
-            {
-                case instruction:
-                {
-                    let coords = line.split("(")[1].split("|");
-                    console.log(coords);
-                    break;
-                }
-
-                default:
-                {
-                    console.log("something else");
-                    break;
-                }
-            }
+            console.log(instr.eval());
         }
 
         this.attachShadow({mode: "open"});
@@ -76,8 +55,8 @@ class Geometry extends HTMLElement
 
     private redraw()
     {
-        shape.line(this.context, new Vector2D(), new Vector2D(300, 300));
-        shape.circle(this.context, new Vector2D(150, 150), 100);
+        line(this.context, new Vector2D(), new Vector2D(300, 300));
+        circle(this.context, new Vector2D(150, 150), 100);
     }
 }
 

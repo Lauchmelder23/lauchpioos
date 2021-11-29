@@ -1,5 +1,5 @@
-import { Vector2D } from "./vector.js"
-import { ShapeStyle } from "./shapeStyle.js";
+/// <reference path="vector.ts" />
+/// <reference path="shapeStyle.ts" />
 
 abstract class Shape
 {
