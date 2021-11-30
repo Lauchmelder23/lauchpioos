@@ -59,7 +59,7 @@ class CircleInstruction extends Instruction
 {
     constructor()
     {
-        super(InstructionType.Line, 2);
+        super(InstructionType.Circle, 2);
     }
 
     eval()

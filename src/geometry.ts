@@ -41,14 +41,9 @@ class Geometry extends HTMLElement
             return;
         }
 
-        for(let instr of parser.instructions)
-        {
-            console.log(instr.eval());
-        }
-
         this.attachShadow({mode: "open"});
         let canvas = document.createElement("canvas");
-        canvas.width = 500;
+        canvas.width = 700;
         canvas.height = 500;
         let context = canvas.getContext("2d");
 
@@ -59,18 +54,27 @@ class Geometry extends HTMLElement
 
 
         this.shapes = []
-        this.shapes.push(new Circle(this.context, new Vector2D(150, 150), 100))
-        this.shapes.push(new Line(this.context, new Vector2D(), new Vector2D(300, 300)))
+        for(let instruction of parser.instructions)
+        {
+            let value = instruction.eval();
+            switch(instruction.getType())
+            {
+                case InstructionType.Line:
+                {
+                    console.log("New line " + value)
+                    this.shapes.push(new Line(this.context, new Vector2D(value[0].x, value[0].y), new Vector2D(value[1].x, value[1].y)));
+                    break;
+                }
+                
+                case InstructionType.Circle:
+                {
+                    console.log("New circle " + value)
+                    this.shapes.push(new Circle(this.context, new Vector2D(value[0].x, value[0].y), value[1]));
+                    break;
+                }
+            }
+        }
 
-        this.shapes.push(new Polygon(this.context,
-            [
-                new Vector2D(150, 150),
-                new Vector2D(150, 250),
-                new Vector2D(250, 250),
-                new Vector2D(250, 150),
-                new Vector2D(300, 300),
-                new Vector2D(250, 350),
-            ]))
         this.redraw();
     }
 
